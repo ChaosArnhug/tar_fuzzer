@@ -17,11 +17,11 @@ void test_empty_field(tar_t* header, char* field, size_t size) {
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-       printf("Usage: ./tar_fuzzer <path_to_tar_extractor>\n");
-       return 1;
+        printf("Usage: ./tar_fuzzer <path_to_tar_extractor>\n");
+        return 1;
     }
 
-    printf("*** Lunching the tar fuzzer with %s as tar extractor ***\n", argv[1]); 
+    printf("*** Lunching the tar fuzzer with %s as tar extractor ***\n", argv[1]);
 
     tar_t header;
     test_empty_field(&header, header.name, 100);
