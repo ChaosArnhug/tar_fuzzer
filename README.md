@@ -4,7 +4,9 @@ Generation fuzzer for tar archive for the UCL Computer Security Course
 
 ### CLION
 
-Open the project in CLION and build with default CMakeLists.txt
+Open the project in `CLION` and build with default CMakeLists.txt
+
+**IMPORTANT**: In `CLION`top right corner look for the build configurations 3 vertical dotted button -> `More Actions` -> `Edit` (Configuration) -> **Check the box labeled** `Emulate terminal in the output console`
 
 Add argument to the tar_fuzzer executable
 
