@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/tar_fuzzer.dir/src/main.c.o CMakeFiles/tar_fuzzer.dir/src/utils.c.o -o tar_fuzzer

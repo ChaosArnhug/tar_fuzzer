@@ -1,0 +1,7 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+#define INPUT_ERROR_CODE (-1)
+#define EXTRACTOR_ERROR_CODE (-2)
+
+#endif //CONSTANTS_H

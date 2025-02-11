@@ -12,8 +12,7 @@
 *.ilk
 *.map
 *.exp
-
-# Precompiled Headers
+/home/suyeon/Documents/tar_fuzzer/src/constants.h /home/suyeon/Documents/tar_fuzzer/src/main.c /home/suyeon/Documents/tar_fuzzer/src/statstable.c /home/suyeon/Documents/tar_fuzzer/src/statstable.h /home/suyeon/Documents/tar_fuzzer/src/tar.h /home/suyeon/Documents/tar_fuzzer/src/utils.c /home/suyeon/Documents/tar_fuzzer/src/utils.h
 *.gch
 *.pch
 
@@ -164,3 +163,6 @@ fabric.properties
 # Azure Toolkit for IntelliJ plugin
 # https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
 .idea/**/azureSettings.xml
+
+/build
+/cmake-build-debug
