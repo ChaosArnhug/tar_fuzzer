@@ -25,6 +25,7 @@ typedef struct posix_header
     char devmajor[8]; // Major device number (octal string, if special file)
     char devminor[8]; // Minor device number (octal string, if special file)
     char prefix[155]; // Prefix for long file names
+    char padding[12]; // Padding to make header size 512 bytes
 } posix_header;
 
 #define TMAGIC   "ustar"        /* ustar and a null */
@@ -43,8 +44,7 @@ typedef struct posix_header
 #define FIFOTYPE '6'            /* FIFO special */
 #define CONTTYPE '7'            /* reserved */
 
-#define XHDTYPE  'x'            /* Extended header referring to the
-next file in the archive */
+#define XHDTYPE  'x'            /* Extended header referring to the next file in the archive */
 #define XGLTYPE  'g'            /* Global extended header */
 
 /* Bits used in the mode field, values in octal.  */
