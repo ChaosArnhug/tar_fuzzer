@@ -7,6 +7,8 @@
 #include <string.h>
 #include "statstable.h"
 #include "constants.h"
+#include "utils.h"
+#include "tar.h"
 
 
 // Global variables
@@ -114,6 +116,10 @@ int main(const int argc, char* argv[])
     test_name();
     // ...
 
+
+    // Test init header with default values
+    //posix_header test_h;
+    //init_posix_header(&test_h);
 
     // Calculation of the total execution time
     gettimeofday(&timer_end, NULL);

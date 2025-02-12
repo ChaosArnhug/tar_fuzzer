@@ -16,7 +16,7 @@ typedef struct posix_header
     char size[12]; // File size in bytes (octal string)
     char mtime[12]; // Modification time (octal string)
     char chksum[8]; // Checksum for the header
-    char typeflag[1]; // File type (one of the TAR_* defines above)
+    char typeflag; // File type (one of the TAR_* defines above)
     char linkname[100]; // Name of linked file (if applicable)
     char magic[6]; // "ustar" string
     char version[2]; // Version number "00"
@@ -25,7 +25,6 @@ typedef struct posix_header
     char devmajor[8]; // Major device number (octal string, if special file)
     char devminor[8]; // Minor device number (octal string, if special file)
     char prefix[155]; // Prefix for long file names
-    char padding[12]; // Padding to make header size 512 bytes
 } posix_header;
 
 #define TMAGIC   "ustar"        /* ustar and a null */

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "tar.h"
 
 /**
@@ -8,7 +9,7 @@
  * @param entry: The tar header
  * @return the value of the checksum
  */
- unsigned int calculate_checksum(struct posix_header* entry){
+ unsigned int calculate_checksum(posix_header* entry){
     // use spaces for the checksum bytes while calculating the checksum
     memset(entry->chksum, ' ', 8);
 
@@ -26,7 +27,7 @@
     return check;
 }
 
-void init_posix_header(struct posix_header* header){
+void init_posix_header(posix_header* header){
     memset(header, 0, sizeof(struct posix_header));
 
     strncpy(header->name, "default_name_archive.tar", 100); 
@@ -34,7 +35,7 @@ void init_posix_header(struct posix_header* header){
     strncpy(header->uid, "0000000", 8);
     strncpy(header->gid, "0000000", 8);
     strncpy(header->size, "00000000000", 12);
-    snprintf(header->mtime, sizeof(header->mtime), "%011o", time(NULL));
+    snprintf(header->mtime, sizeof(header->mtime), "%011lo", time(NULL));
     header->typeflag = REGTYPE;
     strncpy(header->linkname, "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 100);
     strncpy(header->magic, TMAGIC, TMAGLEN);
