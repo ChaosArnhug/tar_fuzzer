@@ -6,12 +6,7 @@
 #ifndef TAR_H
 #define TAR_H
 
-union tar_padding
-{
-    char bytes[12];
-};
-
-#pragma pack(push, 1)
+// IMPORTANT: per assignment we don't need to handle the padding for fuzzing just use the 500 bytes posix header no additional 12-bytes struct
 typedef struct posix_header
 {
     char name[100]; // File name
@@ -30,9 +25,7 @@ typedef struct posix_header
     char devmajor[8]; // Major device number (octal string, if special file)
     char devminor[8]; // Minor device number (octal string, if special file)
     char prefix[155]; // Prefix for long file names
-    union tar_padding padding;
 } posix_header;
-#pragma pack(pop)
 
 #define TMAGIC   "ustar"        /* ustar and a null */
 #define TMAGLEN  6
