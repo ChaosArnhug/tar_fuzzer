@@ -62,32 +62,40 @@ void initialize_fuzzing_types()
 
 int main(const int argc, char* argv[])
 {
-    if (argc != 2 || strlen(argv[1]) == 0)
+    // Try to use provided argument first
+    if (argc == 2 && strlen(argv[1]) > 0)
     {
-        printf("Invalid arguments.\n");
-        printf("Usage: ./fuzzer <path_to_extractor>\n");
-        printf("Example: ./fuzzer ../extractor_x86_64\n");
-        return INPUT_ERROR_CODE;
+        path_extractor = argv[1];
+    }
+    // If no valid argument, try "./extractor" as fallback
+    else if (argc != 2 || strlen(argv[1]) == 0)
+    {
+        path_extractor = "./extractor";
+        printf("No valid path provided, trying default path: %s\n", path_extractor);
     }
 
-    path_extractor = argv[1];
-
+    // Validate the path (whether provided or default)
     struct stat path_stat;
-    if (stat(argv[1], &path_stat) != 0)
+    if (stat(path_extractor, &path_stat) != 0)
     {
-        fprintf(stderr, "Error: extractor path provided doesn't appear to be a valid file: %s\n", argv[1]);
+        fprintf(stderr, "Error: extractor path doesn't appear to be a valid file: %s\n", path_extractor);
+        if (argc != 2 || strlen(argv[1]) == 0)
+        {
+            printf("Usage: ./fuzzer <path_to_extractor>\n");
+            printf("Example: ./fuzzer ../extractor_x86_64\n");
+        }
         return EXTRACTOR_ERROR_CODE;
     }
 
     if (!S_ISREG(path_stat.st_mode))
     {
-        fprintf(stderr, "Error: %s is not a regular file\n", argv[1]);
+        fprintf(stderr, "Error: %s is not a regular file\n", path_extractor);
         return EXTRACTOR_ERROR_CODE;
     }
 
-    if (access(argv[1], X_OK) != 0)
+    if (access(path_extractor, X_OK) != 0)
     {
-        fprintf(stderr, "Error: no execute permission for %s\n", argv[1]);
+        fprintf(stderr, "Error: no execute permission for %s\n", path_extractor);
         return EXTRACTOR_ERROR_CODE;
     }
 
