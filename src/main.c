@@ -118,9 +118,22 @@ int main(const int argc, char* argv[])
 
 
     // Test init new header and create tar archive
-    posix_header test_h;
-    init_posix_header(&test_h, "test_file.txt", 12);
-    create_tar_archive("test_tar.tar", "test_content", 12, &test_h);
+    file_to_archive f1;
+    file_to_archive f2;
+    posix_header h1;
+    posix_header h2;
+
+    init_posix_header(&h1, "test_file_1.txt", 14);
+    init_posix_header(&h2, "test_file_2.txt", 14);
+
+    init_file_to_archive(&f1, &h1, "test_content_1", 14);
+    init_file_to_archive(&f2, &h2, "test_content_2", 14);
+
+    file_to_archive files[2] = {f1, f2};
+    create_tar_archive("test_tar.tar", files, 2);
+
+    int result = extractor(path_extractor, " ./test_tar.tar");
+    printf("Result of extractor: %d\n", result);
 
     // Calculation of the total execution time
     gettimeofday(&timer_end, NULL);
