@@ -117,9 +117,10 @@ int main(const int argc, char* argv[])
     // ...
 
 
-    // Test init header with default values
-    //posix_header test_h;
-    //init_posix_header(&test_h);
+    // Test init new header and create tar archive
+    posix_header test_h;
+    init_posix_header(&test_h, "test_file.txt", 12);
+    create_tar_archive("test_tar.tar", "test_content", 12, &test_h);
 
     // Calculation of the total execution time
     gettimeofday(&timer_end, NULL);

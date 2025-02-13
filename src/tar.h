@@ -25,6 +25,7 @@ typedef struct posix_header
     char devmajor[8]; // Major device number (octal string, if special file)
     char devminor[8]; // Minor device number (octal string, if special file)
     char prefix[155]; // Prefix for long file names
+    char padding[12]; // Padding to make header size 512 bytes
 } posix_header;
 
 #define TMAGIC   "ustar"        /* ustar and a null */
@@ -65,114 +66,6 @@ typedef struct posix_header
 #define SPARSES_IN_OLDGNU_HEADER 4
 #define SPARSES_IN_SPARSE_HEADER 21
 
-struct sparse
-{
-    /* byte offset */
-    char offset[12]; /*   0 */
-    char numbytes[12]; /*  12 */
-    /*  24 */
-};
-
-struct sparse_header
-{
-    /* byte offset */
-    struct sparse sp[SPARSES_IN_SPARSE_HEADER];
-    /*   0 */
-    char isextended; /* 504 */
-    /* 505 */
-};
-
-#define OLDGNU_MAGIC "ustar  "  /* 7 chars and a null */
-
-struct oldgnu_header
-{
-    /* byte offset */
-    char unused_pad1[345]; /*   0 */
-    char atime[12]; /* 345 Incr. archive: atime of the file */
-    char ctime[12]; /* 357 Incr. archive: ctime of the file */
-    char offset[12]; /* 369 Multivolume archive: the offset of
-                                     the start of this volume */
-    char longnames[4]; /* 381 Not used */
-    char unused_pad2; /* 385 */
-    struct sparse sp[SPARSES_IN_OLDGNU_HEADER];
-    /* 386 */
-    char isextended; /* 482 Sparse file: Extension sparse header
-                                     follows */
-    char realsize[12]; /* 483 Sparse file: Real size*/
-    /* 495 */
-};
-
-/* This is a dir entry that contains the names of files that were in the
-   dir at the time the dump was made.  */
-#define GNUTYPE_DUMPDIR 'D'
-
-/* Identifies the *next* file on the tape as having a long linkname.  */
-#define GNUTYPE_LONGLINK 'K'
-
-/* Identifies the *next* file on the tape as having a long name.  */
-#define GNUTYPE_LONGNAME 'L'
-
-/* This is the continuation of a file that began on another volume.  */
-#define GNUTYPE_MULTIVOL 'M'
-
-/* This is for sparse files.  */
-#define GNUTYPE_SPARSE 'S'
-
-/* This file is a tape/volume header.  Ignore it on extraction.  */
-#define GNUTYPE_VOLHDR 'V'
-
-/* Solaris extended header */
-#define SOLARIS_XHDTYPE 'X'
-
-/* Jörg Schilling star header */
-
-struct star_header
-{
-    /* byte offset */
-    char name[100]; /*   0 */
-    char mode[8]; /* 100 */
-    char uid[8]; /* 108 */
-    char gid[8]; /* 116 */
-    char size[12]; /* 124 */
-    char mtime[12]; /* 136 */
-    char chksum[8]; /* 148 */
-    char typeflag; /* 156 */
-    char linkname[100]; /* 157 */
-    char magic[6]; /* 257 */
-    char version[2]; /* 263 */
-    char uname[32]; /* 265 */
-    char gname[32]; /* 297 */
-    char devmajor[8]; /* 329 */
-    char devminor[8]; /* 337 */
-    char prefix[131]; /* 345 */
-    char atime[12]; /* 476 */
-    char ctime[12]; /* 488 */
-    /* 500 */
-};
-
-#define SPARSES_IN_STAR_HEADER      4
-#define SPARSES_IN_STAR_EXT_HEADER  21
-
-struct star_in_header
-{
-    char fill[345]; /*   0  Everything that is before t_prefix */
-    char prefix[1]; /* 345  t_name prefix */
-    char fill2; /* 346  */
-    char fill3[8]; /* 347  */
-    char isextended; /* 355  */
-    struct sparse sp[SPARSES_IN_STAR_HEADER]; /* 356  */
-    char realsize[12]; /* 452  Actual size of the file */
-    char offset[12]; /* 464  Offset of multivolume contents */
-    char atime[12]; /* 476  */
-    char ctime[12]; /* 488  */
-    char mfill[8]; /* 500  */
-    char xmagic[4]; /* 508  "tar" */
-};
-
-struct star_ext_header
-{
-    struct sparse sp[SPARSES_IN_STAR_EXT_HEADER];
-    char isextended;
-};
+#define TAR_BLOCK_SIZE 512
 
 #endif //TAR_H
