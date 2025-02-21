@@ -3,10 +3,9 @@ project(tar_fuzzer C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(fuzzer src/main.c src/utils.c
-        src/statstable.c
-        src/statstable.h
+add_executable(fuzzer src/main.c src/help.c
+        src/help.h
         src/constants.h
-        src/tar.h)
+        src/statstable.h)
 
-target_sources(fuzzer PRIVATE src/main.c src/utils.c)
+target_sources(fuzzer PRIVATE src/main.c src/help.c src/statstable.c)
