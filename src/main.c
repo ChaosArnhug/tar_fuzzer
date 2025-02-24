@@ -22,7 +22,7 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
     create_empty_tar(header, stats_counter);
     handle_extraction(path_extractor,
                       &stats_counter->crash_not_ascii_counter,
-                      stats, CRASH_NON_ASCII, field_type, stats_counter, current_status);
+                      stats, CRASH_NON_ASCII, field_type, stats_counter);
 
     // 2. not integer
     update_status("Starting not integer field test...", stats, current_status);
@@ -32,7 +32,7 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
     create_empty_tar(header, stats_counter);
     handle_extraction(path_extractor,
                       &stats_counter->crash_not_integer_counter,
-                      stats, CRASH_NON_NUMERIC, field_type, stats_counter, current_status);
+                      stats, CRASH_NON_NUMERIC, field_type, stats_counter);
 
     // 3. short
     update_status("Starting too short field test...", stats, current_status);
@@ -53,7 +53,7 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
     create_empty_tar(header, stats_counter);
     handle_extraction(path_extractor,
                       &stats_counter->crash_too_short_counter,
-                      stats, CRASH_TOO_SHORT, field_type, stats_counter, current_status);
+                      stats, CRASH_TOO_SHORT, field_type, stats_counter);
 
     // 4. empty
     update_status("Starting empty field test...", stats, current_status);
@@ -62,7 +62,7 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
     create_empty_tar(header, stats_counter);
     handle_extraction(path_extractor,
                       &stats_counter->crash_empty_counter,
-                      stats, CRASH_EMPTY_FIELD, field_type, stats_counter, current_status);
+                      stats, CRASH_EMPTY_FIELD, field_type, stats_counter);
 
 
 
@@ -74,7 +74,7 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
     create_empty_tar(header, stats_counter);
     handle_extraction(path_extractor,
                       &stats_counter->crash_cut_middle_counter,
-                      stats, CRASH_CUT_MIDDLE, field_type, stats_counter, current_status);
+                      stats, CRASH_CUT_MIDDLE, field_type, stats_counter);
 
     // 6. Not terminated by null byte
     update_status("Starting field not terminated by null byte test...", stats, current_status);
@@ -83,7 +83,7 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
     create_empty_tar(header, stats_counter);
     handle_extraction(path_extractor,
                       &stats_counter->crash_not_ending_with_null_byte_counter,
-                      stats, CRASH_NO_NULL_BYTES, field_type, stats_counter, current_status);
+                      stats, CRASH_NO_NULL_BYTES, field_type, stats_counter);
 
     // 7. all null bytes
     update_status("Starting field with null byte in the middle test...", stats, current_status);
@@ -92,7 +92,7 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
     create_empty_tar(header, stats_counter);
     handle_extraction(path_extractor,
                       &stats_counter->crash_null_byte_in_the_middle_counter,
-                      stats, CRASH_NULL_BYTE_MIDDLE, field_type, stats_counter, current_status);
+                      stats, CRASH_NULL_BYTE_MIDDLE, field_type, stats_counter);
 
     // 8. set all null bytes except last one
     update_status("Starting field with null byte in the middle test...", stats, current_status);
@@ -102,7 +102,7 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
     create_empty_tar(header, stats_counter);
     handle_extraction(path_extractor,
                       &stats_counter->crash_null_byte_in_the_middle_counter,
-                      stats, CRASH_NULL_BYTE_MIDDLE, field_type, stats_counter, current_status);
+                      stats, CRASH_NULL_BYTE_MIDDLE, field_type, stats_counter);
 
     // 9. Some null byte in middle but not ending in one
     update_status("Starting field with null byte in the middle test...", stats, current_status);
@@ -112,7 +112,8 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
     create_empty_tar(header, stats_counter);
     handle_extraction(path_extractor,
                       &stats_counter->crash_null_byte_in_the_middle_counter,
-                      stats, CRASH_NULL_BYTE_MIDDLE, field_type, stats_counter, current_status);
+                      stats, CRASH_NULL_BYTE_MIDDLE, field_type, stats_counter);
+
     // 10. Some null byte in middle
     update_status("Starting field with null byte in the middle test...", stats, current_status);
     init_tar_header(header, stats_counter);
@@ -121,7 +122,7 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
     create_empty_tar(header, stats_counter);
     handle_extraction(path_extractor,
                       &stats_counter->crash_null_byte_in_the_middle_counter,
-                      stats, CRASH_NULL_BYTE_MIDDLE, field_type, stats_counter, current_status);
+                      stats, CRASH_NULL_BYTE_MIDDLE, field_type, stats_counter);
 
 
     // 11. No null byte
@@ -136,7 +137,7 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
     create_empty_tar(header, stats_counter);
     handle_extraction(path_extractor,
                       &stats_counter->crash_no_null_bytes_counter,
-                      stats, CRASH_NO_NULL_BYTES, field_type, stats_counter, current_status);
+                      stats, CRASH_NO_NULL_BYTES, field_type, stats_counter);
 
     // 12. Non-octal
     update_status("Starting non-octal field test...", stats, current_status);
@@ -146,7 +147,7 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
     create_empty_tar(header, stats_counter);
     handle_extraction(path_extractor,
                       &stats_counter->crash_not_octal_counter,
-                      stats, CRASH_NON_OCTAL, field_type, stats_counter, current_status);
+                      stats, CRASH_NON_OCTAL, field_type, stats_counter);
 
     // 13. Special characters still in ascii
     update_status("Starting field with special ASCII character test...", stats, current_status);
@@ -159,7 +160,7 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
         create_empty_tar(header, stats_counter);
         handle_extraction(path_extractor,
                           &stats_counter->crash_special_character_counter,
-                          stats, CRASH_SPECIAL_CHAR, field_type, stats_counter, current_status);
+                          stats, CRASH_SPECIAL_CHAR, field_type, stats_counter);
     }
 
     // 14. Negative value
@@ -169,7 +170,7 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
     create_empty_tar(header, stats_counter);
     handle_extraction(path_extractor,
                       &stats_counter->crash_negative_value_counter,
-                      stats, CRASH_NEGATIVE_VALUE, field_type, stats_counter, current_status);
+                      stats, CRASH_NEGATIVE_VALUE, field_type, stats_counter);
 }
 
 void name_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter,
@@ -212,7 +213,7 @@ void mode_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counte
 
         create_empty_tar(&header, stats_counter);
         handle_extraction(path_extractor, &stats_counter->crash_mode_permission_counter, stats, CRASH_MODE_PERMISSIONS,
-                          FIELD_MODE, stats_counter, current_status);
+                          FIELD_MODE, stats_counter);
     }
 
     stats_counter->mode_field_vulnerabilities_counter += stats_counter->crash_counter - current_crash_counter;
@@ -268,7 +269,7 @@ void size_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counte
         snprintf(header.size, sizeof(header.size), "%o", possible_size[i]);
         create_tar(&header, content_header, content_header_size, end_data, LENGTH_TAR_BLOCK, stats_counter);
         handle_extraction(path_extractor, &stats_counter->crash_size_counter, stats, CRASH_OVERFLOW, FIELD_SIZE,
-                          stats_counter, current_status);
+                          stats_counter);
     }
 
     init_tar_header(&header, stats_counter);
@@ -276,7 +277,7 @@ void size_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counte
     const char end_data[LENGTH_TAR_BLOCK] = {0}; // Zero initialization
     create_tar(&header, content_header, content_header_size, end_data, LENGTH_TAR_BLOCK, stats_counter);
     handle_extraction(path_extractor, &stats_counter->crash_size_counter, stats, CRASH_NEGATIVE_VALUE,
-                      FIELD_SIZE, stats_counter, current_status);
+                      FIELD_SIZE, stats_counter);
     stats_counter->size_field_vulnerabilities_counter += stats_counter->crash_counter - current_crash_counter;
 }
 
@@ -289,7 +290,7 @@ void create_header_with_time(const time_t time, stats_table_t* stats, char* path
     snprintf(time_string, sizeof(header.mtime), "%lo", time);
     strncpy(header.mtime, time_string, sizeof(header.mtime));
     create_empty_tar(&header, stats_counter);
-    //handle_extraction(path_extractor, &stats_counter->successful_with_size, stats, CRASH_OVERFLOW, FIELD_SIZE, stats_counter, current_status);
+    //handle_extraction(path_extractor, &stats_counter->successful_with_size, stats, CRASH_OVERFLOW, FIELD_SIZE, stats_counter);
     // TODO change
 }
 
@@ -363,7 +364,7 @@ void typeflag_fuzzing(stats_table_t* stats, const char* path_extractor, stats_co
         create_empty_tar(&header, stats_counter);
         handle_extraction(path_extractor,
                           &stats_counter->typeflag_field_vulnerabilities_counter,
-                          stats, CRASH_SPECIAL_CHAR, FIELD_TYPEFLAG, stats_counter, current_status);
+                          stats, CRASH_SPECIAL_CHAR, FIELD_TYPEFLAG, stats_counter);
     }
 
     // 2. Try -1
@@ -372,14 +373,14 @@ void typeflag_fuzzing(stats_table_t* stats, const char* path_extractor, stats_co
     create_empty_tar(&header, stats_counter);
     handle_extraction(path_extractor, &stats_counter->typeflag_field_vulnerabilities_counter, stats,
                       CRASH_CHAR_OVERFLOW,
-                      FIELD_TYPEFLAG, stats_counter, current_status);
+                      FIELD_TYPEFLAG, stats_counter);
 
     // 3. try non ascii
     init_tar_header(&header, stats_counter);
     header.typeflag = '\xFF';
     create_empty_tar(&header, stats_counter);
     handle_extraction(path_extractor, &stats_counter->typeflag_field_vulnerabilities_counter, stats, CRASH_SPECIAL_CHAR,
-                      FIELD_TYPEFLAG, stats_counter, current_status);
+                      FIELD_TYPEFLAG, stats_counter);
     stats_counter->typeflag_field_vulnerabilities_counter += stats_counter->crash_counter - current_crash_counter;
 }
 

@@ -85,7 +85,7 @@ finally:
 
 void handle_extraction(const char* path_extractor, int* crash_counter, stats_table_t* stats,
                        const int crash_type, const enum TarHeaderField field_type,
-                       stats_counter_t* stats_counter, char* current_status)
+                       stats_counter_t* stats_counter)
 {
     const int return_value = extract(path_extractor, stats_counter);
     //printf("Value: %d\n", return_value);

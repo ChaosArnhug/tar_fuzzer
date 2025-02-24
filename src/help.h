@@ -136,10 +136,8 @@ void clear_terminal();
  * @param crash_type: the type of crash that occurred
  * @param field_type: the type of field that caused the crash
  * @param stats_counter: the stats counter to update
- * @param current_status: the current status message
  */
 void handle_extraction(const char* path_extractor, int* crash_counter, stats_table_t* stats,
-                       int crash_type, enum TarHeaderField field_type, stats_counter_t* stats_counter,
-                       char* current_status);
+                       int crash_type, enum TarHeaderField field_type, stats_counter_t* stats_counter);
 
 #endif
