@@ -1,18 +1,15 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -I./src
-SRC = src/main.c src/utils.c src/statstable.c
+SRC = src/help.c src/main.c src/statstable.c
 OBJ = $(SRC:.c=.o)
-TARGET = tar_fuzzer
 
-all: $(TARGET)
-
-$(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^
+fuzzer: $(OBJ)
+	$(CC) -o $@ $^
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJ) $(TARGET)
+	rm -f $(OBJ) fuzzer
 
-.PHONY: all clean
+.PHONY: clean

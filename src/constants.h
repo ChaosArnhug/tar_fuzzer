@@ -67,6 +67,7 @@ static const char* keep_files[] = {
     "success_*",
     "cmake_install.cmake",
     "CMakeCache.txt",
+    "CMakeLists.txt",
 };
 
 static const char* exclude_paths[] = {

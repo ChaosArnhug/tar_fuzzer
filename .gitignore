@@ -166,4 +166,4 @@ fabric.properties
 
 /build
 /cmake-build-debug
-tar_fuzzer
+fuzzer

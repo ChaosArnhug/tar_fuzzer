@@ -202,8 +202,6 @@ void create_empty_tar(tar_t* header, const stats_counter_t* stats_counter)
 
 void remove_tar_archives()
 {
-    system("find . -type f -exec file {} + | grep ': empty' | cut -d ':' -f 1 | xargs rm -f 2>/dev/null");
-
     // Base command to remove unwanted non-tar files
     char command[2048] = "find . -type f";
 
@@ -223,7 +221,7 @@ void remove_tar_archives()
 
     // Only remove files that are not .tar
     snprintf(command + strlen(command), sizeof(command) - strlen(command),
-             " ! -name '*.tar' -delete");
+             " -delete");
 
     system(command);
 }
