@@ -1,5 +1,7 @@
 #ifndef HELP_H
 #define HELP_H
+#include <stdbool.h>
+
 #include "constants.h"
 #include "statstable.h"
 
@@ -137,7 +139,7 @@ void clear_terminal();
  * @param field_type: the type of field that caused the crash
  * @param stats_counter: the stats counter to update
  */
-void handle_extraction(const char* path_extractor, int* crash_counter, stats_table_t* stats,
+int handle_extraction(const char* path_extractor, int* crash_counter, stats_table_t* stats,
                        int crash_type, enum TarHeaderField field_type, stats_counter_t* stats_counter);
 
 #endif

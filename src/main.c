@@ -14,15 +14,48 @@
 void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const enum TarHeaderField field_type,
                 stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter, char* current_status)
 {
+    unsigned int seed;
+    if (getentropy(&seed, sizeof(seed)) < 0)
+    {
+        struct timespec ts;
+        clock_gettime(CLOCK_REALTIME, &ts);
+        seed = (unsigned int)ts.tv_sec ^ (unsigned int)ts.tv_nsec ^ (unsigned int)getpid();
+    }
+
     // 1. Non ascii
     update_status("Starting non-ASCII field test...", stats, current_status);
-    const char not_ascii = '\xFF';
-    init_tar_header(header, stats_counter);
-    strncpy(field_name, &not_ascii, field_size);
-    create_empty_tar(header, stats_counter);
-    handle_extraction(path_extractor,
-                      &stats_counter->crash_not_ascii_counter,
-                      stats, CRASH_NON_ASCII, field_type, stats_counter);
+    const char non_ascii_chars[] = {
+        '\xFF', // 255, highest single-byte value
+        (char)2144577, // Out-of-range large value
+        '\x80', // First non-ASCII byte in extended ASCII
+        '\xC0', // Invalid start of UTF-8 sequence
+        '\xC1', // Overlong encoding attempt
+        '\xF7', // Invalid UTF-8 leading byte
+        '\xF8', // Beyond valid UTF-8 range
+        '\xFE', // Invalid byte in UTF-8
+        '\x81', // High-byte control character
+        '\xA0', // Non-breaking space (NBSP)
+        '\xAD', // Soft hyphen (invisible in some cases)
+        '\xD8', // Lead byte of a UTF-16 surrogate pair
+        '\xE0', // Start of a three-byte UTF-8 sequence
+        '\xED', // Last valid 3-byte UTF-8 lead (used in surrogates)
+        '\xF4', // Start of a four-byte UTF-8 sequence
+        '\xFF', // Another invalid byte
+        (char)0x110000 // Beyond Unicode valid range (> U+10FFFF)
+    };
+    for (int i = 0; i < sizeof(non_ascii_chars); i++)
+    {
+        init_tar_header(header, stats_counter);
+        memset(field_name, non_ascii_chars[i], field_size - 1);
+        field_name[field_size - 1] = 0;
+        create_empty_tar(header, stats_counter);
+        if (handle_extraction(path_extractor,
+                              &stats_counter->crash_not_ascii_counter,
+                              stats, CRASH_NON_ASCII, field_type, stats_counter) != 0)
+        {
+            break;
+        }
+    }
 
     // 2. not integer
     update_status("Starting not integer field test...", stats, current_status);
@@ -36,13 +69,6 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
 
     // 3. short
     update_status("Starting too short field test...", stats, current_status);
-    unsigned int seed;
-    if (getentropy(&seed, sizeof(seed)) < 0)
-    {
-        struct timespec ts;
-        clock_gettime(CLOCK_REALTIME, &ts);
-        seed = (unsigned int)ts.tv_sec ^ (unsigned int)ts.tv_nsec;
-    }
     init_tar_header(header, stats_counter);
     for (int i = 0; i < (int)field_size - 2; i++)
     {
@@ -63,7 +89,6 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
     handle_extraction(path_extractor,
                       &stats_counter->crash_empty_counter,
                       stats, CRASH_EMPTY_FIELD, field_type, stats_counter);
-
 
 
     // 5. cut in half
@@ -395,7 +420,8 @@ void linkname_fuzzing(stats_table_t* stats, const char* path_extractor, stats_co
     stats_counter->linkname_field_vulnerabilities_counter += stats_counter->crash_counter - current_crash_counter;
 }
 
-void magic_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter, char* current_status)
+void magic_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter,
+                   char* current_status)
 {
     tar_t header;
     const int current_crash_counter = stats_counter->crash_counter;
@@ -404,11 +430,13 @@ void magic_fuzzing(stats_table_t* stats, const char* path_extractor, stats_count
     stats_counter->magic_field_vulnerabilities_counter += stats_counter->crash_counter - current_crash_counter;
 }
 
-void version_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter, char* current_status)
+void version_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter,
+                     char* current_status)
 {
     tar_t header;
     const int current_crash_counter = stats_counter->crash_counter;
-    fuzz_field(&header, header.version, sizeof(header.version), FIELD_VERSION, stats, path_extractor, stats_counter, current_status);
+    fuzz_field(&header, header.version, sizeof(header.version), FIELD_VERSION, stats, path_extractor, stats_counter,
+               current_status);
     // 1. Try all possible octal values for the version field
     char octal[3] = {'0', '0', '\0'};
 
@@ -444,25 +472,30 @@ void version_fuzzing(stats_table_t* stats, const char* path_extractor, stats_cou
     stats_counter->version_field_vulnerabilities_counter += stats_counter->crash_counter - current_crash_counter;
 }
 
-void uname_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter, char* current_status)
+void uname_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter,
+                   char* current_status)
 {
     tar_t header;
     const int current_crash_counter = stats_counter->crash_counter;
-    fuzz_field(&header, header.uname, sizeof(header.uname), FIELD_UNAME, stats, path_extractor,  stats_counter, current_status);
+    fuzz_field(&header, header.uname, sizeof(header.uname), FIELD_UNAME, stats, path_extractor, stats_counter,
+               current_status);
 
     stats_counter->uname_field_vulnerabilities_counter += stats_counter->crash_counter - current_crash_counter;
 }
 
-void gname_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter, char* current_status)
+void gname_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter,
+                   char* current_status)
 {
     tar_t header;
     const int current_crash_counter = stats_counter->crash_counter;
-    fuzz_field(&header, header.gname, sizeof(header.gname), FIELD_GNAME, stats, path_extractor,  stats_counter, current_status);
+    fuzz_field(&header, header.gname, sizeof(header.gname), FIELD_GNAME, stats, path_extractor, stats_counter,
+               current_status);
 
     stats_counter->gname_field_vulnerabilities_counter += stats_counter->crash_counter - current_crash_counter;
 }
 
-void end_of_file_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter, char* current_status)
+void end_of_file_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter,
+                         char* current_status)
 {
     tar_t header;
     const int current_crash_counter = stats_counter->crash_counter;
@@ -481,7 +514,8 @@ void end_of_file_fuzzing(stats_table_t* stats, const char* path_extractor, stats
     {
         const int content_header_size = sizeof(content_header);
         init_tar_header(&header, stats_counter);
-        create_tar(&header, NULL, 0, end_data, end_data_sizes[i], stats_counter); // Create a tar file with no file content
+        create_tar(&header, NULL, 0, end_data, end_data_sizes[i], stats_counter);
+        // Create a tar file with no file content
         //extract(path_extractor);
 
         init_tar_header(&header, stats_counter);
@@ -547,19 +581,19 @@ int main(const int argc, char* argv[])
     initialize_fuzzing_types(&stats);
 
     name_fuzzing(&stats, path_extractor, &stats_counter, current_status);
-    // mode_fuzzing(&stats, path_extractor, &stats_counter, current_status);
-    // uid_fuzzing(&stats, path_extractor, &stats_counter, current_status);
-    // gid_fuzzing(&stats, path_extractor, &stats_counter, current_status);
-    // size_fuzzing(&stats, path_extractor,&stats_counter, current_status);
-    // mtime_fuzzing(&stats, path_extractor,&stats_counter, current_status);
-    // chksum_fuzzing(&stats, path_extractor, &stats_counter, current_status);
-    // typeflag_fuzzing(&stats, path_extractor, &stats_counter, current_status);
-    // linkname_fuzzing(&stats, path_extractor,&stats_counter, current_status);
-    // magic_fuzzing(&stats, path_extractor, &stats_counter, current_status);
-    // version_fuzzing(&stats, path_extractor,&stats_counter, current_status);
-    // uname_fuzzing(&stats, path_extractor,&stats_counter, current_status);
-    // gname_fuzzing(&stats, path_extractor, &stats_counter, current_status);
-    // end_of_file_fuzzing(&stats, path_extractor, &stats_counter, current_status);
+    mode_fuzzing(&stats, path_extractor, &stats_counter, current_status);
+    uid_fuzzing(&stats, path_extractor, &stats_counter, current_status);
+    gid_fuzzing(&stats, path_extractor, &stats_counter, current_status);
+    size_fuzzing(&stats, path_extractor, &stats_counter, current_status);
+    mtime_fuzzing(&stats, path_extractor, &stats_counter, current_status);
+    chksum_fuzzing(&stats, path_extractor, &stats_counter, current_status);
+    typeflag_fuzzing(&stats, path_extractor, &stats_counter, current_status);
+    linkname_fuzzing(&stats, path_extractor, &stats_counter, current_status);
+    magic_fuzzing(&stats, path_extractor, &stats_counter, current_status);
+    version_fuzzing(&stats, path_extractor, &stats_counter, current_status);
+    uname_fuzzing(&stats, path_extractor, &stats_counter, current_status);
+    gname_fuzzing(&stats, path_extractor, &stats_counter, current_status);
+    end_of_file_fuzzing(&stats, path_extractor, &stats_counter, current_status);
 
     gettimeofday(&timer_end, NULL);
     const double time_used = (double)(timer_end.tv_sec - timer_start.tv_sec) +

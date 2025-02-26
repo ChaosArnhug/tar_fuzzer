@@ -48,7 +48,6 @@ int extract(const char* path_extractor, stats_counter_t* stats_counter)
         return -1; /* popen() error */
     }
 
-    /* We'll read up to one line of output from the extractor. */
     char buf[128];
     if (fgets(buf, sizeof(buf), fp) == NULL)
     {
@@ -56,8 +55,7 @@ int extract(const char* path_extractor, stats_counter_t* stats_counter)
         goto finally;
     }
 
-    /* Compare with your known crash marker. */
-    /* The string in your code was "*** The program has crashed ***\n" */
+    /* The string is "*** The program has crashed ***\n" */
     /* which is exactly 32 chars + a null terminator => length 33. */
     if (strncmp(buf, "*** The program has crashed ***\n", 33) == 0)
     {
@@ -83,24 +81,23 @@ finally:
     return rv;
 }
 
-void handle_extraction(const char* path_extractor, int* crash_counter, stats_table_t* stats,
+int handle_extraction(const char* path_extractor, int* crash_counter, stats_table_t* stats,
                        const int crash_type, const enum TarHeaderField field_type,
                        stats_counter_t* stats_counter)
 {
     const int return_value = extract(path_extractor, stats_counter);
-    //printf("Value: %d\n", return_value);
     switch (return_value)
     {
     case 0:
         /* No crash */
         update_stats(stats, 0, crash_type, field_type);
-        break;
+        return 0;
 
     case 1:
         /* The extractor printed the crash message. */
         (*crash_counter)++;
         update_stats(stats, 1, crash_type, field_type);
-        break;
+        return 1;
 
     // case 2:
     //     /* The extractor crashed, but rename() failed. */
@@ -111,7 +108,7 @@ void handle_extraction(const char* path_extractor, int* crash_counter, stats_tab
     default:
         /* popen or pclose failed => treat it as no crash. */
         update_stats(stats, 0, crash_type, field_type);
-        break;
+        return 0;
     }
 }
 
