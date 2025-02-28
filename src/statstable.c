@@ -98,7 +98,9 @@ void print_stats_table(const stats_table_t* stats, char* current_status)
     printf("+------------------------------------------+-----------------------------------+\r\n");
 
     // Print both sections side by side
-    const int max_rows = stats->num_crash_types > stats->num_field_types ? stats->num_crash_types : stats->num_field_types;
+    const int max_rows = stats->num_crash_types > stats->num_field_types
+                             ? stats->num_crash_types
+                             : stats->num_field_types;
 
     for (int i = 0; i < max_rows; i++)
     {
@@ -117,7 +119,7 @@ void print_stats_table(const stats_table_t* stats, char* current_status)
         }
 
         // Right side (Affected Fields)
-        if (i < stats->num_field_types)
+        if (i < stats->num_crash_types)
         {
             printf("| %-14s: %s%-7d%s           |\r\n",
                    stats->field_types[i].name,
@@ -171,18 +173,20 @@ void initialize_fuzzing_types(stats_table_t* stats)
 {
     // Initialize success types (the types of tests we run)
     add_crash_type(stats, "Empty field", CRASH_EMPTY_FIELD);
-    add_crash_type(stats, "non ASCII field", CRASH_NON_ASCII);
-    add_crash_type(stats, "non numeric field", CRASH_NON_NUMERIC);
-    add_crash_type(stats, "too short field", CRASH_TOO_SHORT);
-    add_crash_type(stats, "non octal field", CRASH_NON_OCTAL);
-    add_crash_type(stats, "field cut in middle", CRASH_CUT_MIDDLE);
-    add_crash_type(stats, "field null terminated",CRASH_NULL_TERMINATED);
-    add_crash_type(stats, "field with null byte", CRASH_NULL_BYTE_MIDDLE);
-    add_crash_type(stats, "field with no null bytes", CRASH_NO_NULL_BYTES);
-    add_crash_type(stats, "field with special char", CRASH_SPECIAL_CHAR);
-    add_crash_type(stats, "field with negative value", CRASH_NEGATIVE_VALUE);
-    add_crash_type(stats, "mode permissions", CRASH_MODE_PERMISSIONS);
-    add_crash_type(stats, "size overflow", CRASH_OVERFLOW);
+    add_crash_type(stats, "Non ASCII field", CRASH_NON_ASCII);
+    add_crash_type(stats, "Not integer field", CRASH_NON_NUMERIC);
+    add_crash_type(stats, "Too short field", CRASH_TOO_SHORT);
+    add_crash_type(stats, "Non octal field", CRASH_NON_OCTAL);
+    add_crash_type(stats, "Field null terminated",CRASH_NULL_TERMINATED);
+    add_crash_type(stats, "Field with null byte", CRASH_NULL_BYTE_MIDDLE);
+    add_crash_type(stats, "Field with no null bytes", CRASH_NO_NULL_BYTES);
+    add_crash_type(stats, "Field with special char", CRASH_SPECIAL_CHAR);
+    add_crash_type(stats, "Field with negative value", CRASH_NEGATIVE_VALUE);
+    add_crash_type(stats, "Mode permissions", CRASH_MODE_PERMISSIONS);
+    add_crash_type(stats, "Size overflow", CRASH_OVERFLOW);
+    add_crash_type(stats, "Integer overflow", CRASH_OVERFLOW_VALUE);
+    add_crash_type(stats, "Injection attack", CRASH_INJECTION_ATTACK);
+    add_crash_type(stats, "Miscellaneous", CRASH_MISCELLANEOUS);
 
     // Initialize field types (the fields we test)
     add_field_type(stats, "name field", FIELD_NAME);

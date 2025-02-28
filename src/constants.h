@@ -16,6 +16,7 @@
 #define END_BYTES 1024 // "At the end of the archive there are two 512-bytes blocks filled with binary zeros as an end-of-file marker"
 
 
+
 #define LENGTH_NAME      100
 #define LENGTH_MODE      8
 #define LENGTH_UID       8
@@ -136,6 +137,9 @@ static enum TarMode tar_modes[] = {
 #define CRASH_CHAR_OVERFLOW      11
 #define CRASH_MODE_PERMISSIONS   12
 #define CRASH_OVERFLOW          13
+#define CRASH_OVERFLOW_VALUE 14
+#define CRASH_INJECTION_ATTACK 15
+#define CRASH_MISCELLANEOUS 16
 
 enum TarHeaderField
 {

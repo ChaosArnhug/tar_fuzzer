@@ -1,6 +1,5 @@
 #ifndef HELP_H
 #define HELP_H
-#include <stdbool.h>
 
 #include "constants.h"
 #include "statstable.h"
@@ -47,6 +46,9 @@ typedef struct stats_counter_t
     int uname_field_vulnerabilities_counter;
     int gname_field_vulnerabilities_counter;
     int eof_vulnerabilities_counter;
+    int crash_overflow_value_counter;
+    int crash_injection_attack_counter;
+    int crash_miscellaneous_counter;
 
     int crash_empty_counter;
     int crash_not_ascii_counter;
@@ -140,6 +142,6 @@ void clear_terminal();
  * @param stats_counter: the stats counter to update
  */
 int handle_extraction(const char* path_extractor, int* crash_counter, stats_table_t* stats,
-                       int crash_type, enum TarHeaderField field_type, stats_counter_t* stats_counter);
+                      int crash_type, enum TarHeaderField field_type, stats_counter_t* stats_counter);
 
 #endif
