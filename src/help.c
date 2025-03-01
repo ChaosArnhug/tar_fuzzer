@@ -115,7 +115,7 @@ int handle_extraction(const char* path_extractor, int* crash_counter, stats_tabl
 void init_tar_header(tar_t* header, stats_counter_t* stat_counter)
 {
     char archive_name[LENGTH_NAME];
-    snprintf(archive_name, sizeof(archive_name), "temp_%d.tar",
+    snprintf(archive_name, sizeof(archive_name), "temp_%d.txt",
              stat_counter->archive_created_counter++);
 
     char linkname[LENGTH_LINKNAME];
@@ -227,4 +227,113 @@ void remove_tar_archives()
 void clear_terminal()
 {
     system("clear");
+}
+
+
+
+void init_tar_header_with_content(tar_t* header, stats_counter_t* stat_counter, char* content)
+{
+    char archive_name[LENGTH_NAME];
+    snprintf(archive_name, sizeof(archive_name), "temp_%d.txt",
+             stat_counter->archive_created_counter++);
+
+    char linkname[LENGTH_LINKNAME];
+    memset(linkname, '0', LENGTH_LINKNAME - 1);
+    linkname[LENGTH_LINKNAME - 1] = '\0'; // Null-terminate
+
+    // Initialize with designated initializers
+    *header = (tar_t){
+        .name = {0},
+        .mode = DEFAULT_MODE_FIELD,
+        .uid = DEFAULT_UNIX_USER_ID,
+        .gid = DEFAULT_UNIX_GROUP_ID,
+        .size = {0},
+        .mtime = {0},
+        .chksum = {0},
+        .typeflag = REGTYPE,
+        .linkname = {0},
+        .magic = TMAGIC,
+        .version = TVERSION,
+        .uname = DEFAULT_UNIX_USER,
+        .gname = DEFAULT_UNIX_USER,
+        .devmajor = DEFAULT_UNIX_USER_ID,
+        .devminor = DEFAULT_UNIX_USER_ID,
+        .prefix = {0},
+        .padding = {0}
+    };
+
+
+    strncpy(header->name, archive_name, sizeof(header->name) - 1);
+    header->name[LENGTH_NAME - 1] = '\0'; // Force null termination
+
+    snprintf(header->size, sizeof(header->size), "%011o", (unsigned int)strlen(content));
+    snprintf(header->mtime, sizeof(header->mtime), "%011lo", time(NULL));
+    snprintf(header->linkname, sizeof(header->linkname), "%s", linkname);
+    calculate_checksum(header);
+}
+
+int tar_archive_mul_file(const char* tar_filename, file_to_archive* files, size_t file_count) {
+    if (tar_filename == NULL || files == NULL) {
+        perror("Error create_tar_archive: tar_filename or files is NULL\n");
+        return -1;
+    }
+
+    FILE *tar_file;
+    if (!(tar_file = fopen(tar_filename, "wb"))) {
+        perror("Error create_tar_archive: Cannot open file\n");
+        return -1;
+    }
+
+    for (size_t i = 0; i < file_count; i++) {
+        file_to_archive* file = &files[i];
+
+        if (file->header == NULL) {
+            perror("Error create_tar_archive: file header is NULL\n");
+            continue;
+        }
+
+        if (file->content != NULL && file->content_size <= 0) {
+            perror("Error create_tar_archive: content is not NULL so content_size cannot be less or equal to 0\n");
+            continue;
+        }
+
+        // Write header in the tar file
+        if (fwrite(file->header, sizeof(tar_t), 1, tar_file) != 1) {
+            perror("Error create_tar_archive: failed to write header to tar file\n");
+            continue;
+        }
+
+        // Write file content
+        size_t bytes_written = 0;
+        while (file->content != NULL && bytes_written < file->content_size) {
+            size_t chunk_size = (file->content_size - bytes_written) > LENGTH_TAR_BLOCK ? LENGTH_TAR_BLOCK : (file->content_size - bytes_written);
+            if (fwrite(file->content + bytes_written, sizeof(char), chunk_size, tar_file) != chunk_size) {
+                perror("Error create_tar_archive: failed to write content to tar file\n");
+                break;
+            }
+            bytes_written += chunk_size;
+        }
+
+        // File last chunk if less than 512 bytes
+        size_t padding_size = (file->content_size % LENGTH_TAR_BLOCK == 0) ? 0 : (LENGTH_TAR_BLOCK - (file->content_size % LENGTH_TAR_BLOCK));
+        if (padding_size != LENGTH_TAR_BLOCK) {
+            char padding[LENGTH_TAR_BLOCK] = {0};
+            if (fwrite(padding, 1, padding_size, tar_file) != padding_size) {
+                perror("Error create_tar_archive: failed to write padding to tar file\n");
+                fclose(tar_file);
+                return -1;
+            }
+        }
+    }
+
+    // Archive should end with two empty blocks as explained in https://www.gnu.org/software/tar/manual/html_node/Standard.html
+    char end_of_archive[END_BYTES] = {0};
+    if (fwrite(end_of_archive, sizeof(char), END_BYTES, tar_file) != END_BYTES) {
+        perror("Error create_tar_archive: failed to write end of archive to tar file\n");
+        fclose(tar_file);
+        return -1;
+    }
+
+    fclose(tar_file);
+    return 0;
 }

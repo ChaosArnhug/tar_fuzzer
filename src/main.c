@@ -729,3 +729,32 @@ int main(const int argc, char* argv[])
     remove_tar_archives();
     return 0;
 }
+
+/* int main() {
+    // Initialize the stats counter
+    stats_counter_t stats_counter;
+    init_stats_counter(&stats_counter);
+
+    // Create tar headers for the files to be archived
+    tar_t header1, header2;
+    init_tar_header_with_content(&header1, &stats_counter, "uwu");
+    init_tar_header_with_content(&header2, &stats_counter, "owo");
+
+    // Create file_to_archive structures
+    file_to_archive files[] = {
+        { &header1, "uwu", (size_t)strlen("uwu") },
+        { &header2, "owo", (size_t)strlen("owo") }
+    };
+
+    // Create the tar archive
+    const char* tar_filename = "archive.tar";
+    int result = tar_archive_mul_file(tar_filename, files, sizeof(files) / sizeof(files[0]));
+
+    if (result == 0) {
+        printf("Tar archive created successfully: %s\n", tar_filename);
+    } else {
+        printf("Failed to create tar archive: %s\n", tar_filename);
+    }
+
+    return 0;
+} */

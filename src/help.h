@@ -26,6 +26,12 @@ typedef struct tar_t
     char padding[LENGTH_PADDING]; /* 500 */
 } tar_t;
 
+typedef struct file_to_archive {
+    tar_t* header;
+    char* content;
+    size_t content_size;
+} file_to_archive;
+
 typedef struct stats_counter_t
 {
     int extraction_counter;
