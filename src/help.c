@@ -148,7 +148,7 @@ void init_tar_header(tar_t* header, stats_counter_t* stat_counter)
     };
 
 
-    snprintf(header->name, sizeof(header->name) - 1, "%s", archive_name);
+    strncpy(header->name, archive_name, sizeof(header->name) - 1);
     header->name[LENGTH_NAME - 1] = '\0'; // Force null termination
 
     snprintf(header->size, sizeof(header->size), "%s", size);

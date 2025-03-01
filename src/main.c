@@ -43,7 +43,7 @@ void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const 
         '\xFF', // Another invalid byte
         (char)0x110000 // Beyond Unicode valid range (> U+10FFFF)
     };
-    for (int i = 0; i < sizeof(non_ascii_chars); i++)
+    for (long unsigned int i = 0; i < sizeof(non_ascii_chars); i++)
     {
         init_tar_header(header, stats_counter);
         memset(field_name, non_ascii_chars[i], field_size - 1); // here we use memset not strncpy because non ascii
@@ -469,6 +469,7 @@ void typeflag_fuzzing(stats_table_t* stats, const char* path_extractor, stats_co
     const int current_crash_counter = stats_counter->crash_counter;
 
     // 1. Try every value until 255 (1 byte)
+    update_status("Starting typeflag possible value test...", stats, current_status);
     for (int i = 0; i < 256; i++)
     {
         init_tar_header(&header, stats_counter);
@@ -478,21 +479,27 @@ void typeflag_fuzzing(stats_table_t* stats, const char* path_extractor, stats_co
                           &stats_counter->typeflag_field_vulnerabilities_counter,
                           stats, CRASH_SPECIAL_CHAR, FIELD_TYPEFLAG, stats_counter);
     }
+    update_status("Completed typeflag possible value test...", stats, current_status);
 
     // 2. Try -1
+    update_status("Starting typeflag nagative value test...", stats, current_status);
     init_tar_header(&header, stats_counter);
     header.typeflag = -1;
     create_empty_tar(&header, stats_counter);
     handle_extraction(path_extractor, &stats_counter->typeflag_field_vulnerabilities_counter, stats,
                       CRASH_CHAR_OVERFLOW,
                       FIELD_TYPEFLAG, stats_counter);
+    update_status("Completed typeflag nagative value test...", stats, current_status);
 
     // 3. try non ascii
+    update_status("Starting typeflag non ascii value test...", stats, current_status);
     init_tar_header(&header, stats_counter);
     header.typeflag = '\xFF';
     create_empty_tar(&header, stats_counter);
     handle_extraction(path_extractor, &stats_counter->typeflag_field_vulnerabilities_counter, stats, CRASH_SPECIAL_CHAR,
                       FIELD_TYPEFLAG, stats_counter);
+    update_status("Completed typeflag non ascii value test...", stats, current_status);
+
     stats_counter->typeflag_field_vulnerabilities_counter += stats_counter->crash_counter - current_crash_counter;
 }
 
