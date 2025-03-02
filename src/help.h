@@ -69,6 +69,7 @@ typedef struct stats_counter_t
     int crash_special_character_counter;
     int crash_mode_permission_counter;
     int crash_size_counter;
+    int crash_multiple_files_counter;
 } stats_counter_t;
 
 /*
@@ -150,4 +151,20 @@ void clear_terminal();
 int handle_extraction(const char* path_extractor, int* crash_counter, stats_table_t* stats,
                       int crash_type, enum TarHeaderField field_type, stats_counter_t* stats_counter);
 
+/*
+    * Initializes a tar header for the provided content
+    *
+    * @param header: the tar header to initialize
+    * @param stat_counter: the stats counter to use
+    * @param content: the content to use
+*/
+void init_tar_header_with_content(tar_t* header, stats_counter_t* stat_counter, char* content);
+
+/*
+    * Creates a tar archive with the provided files and headers
+    * @param files: the structure containing the files and their header to archive
+    * @param file_count: the number of files to archive
+    * @param stats_counter: the stats counter to update
+*/ 
+void create_tar_mul_file(file_to_archive* files, size_t file_count, const stats_counter_t* stats_counter);
 #endif

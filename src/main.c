@@ -651,6 +651,31 @@ void end_of_file_fuzzing(stats_table_t* stats, const char* path_extractor, stats
     update_status("EOF fuzzing complete", stats, current_status);
 }
 
+void multiple_file_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter,
+    char* current_status) 
+{
+    tar_t header1, header2;
+    char* content1 = "Test_content_1";
+    char* content2 = "Test_content_2";
+    const int current_crash_counter = stats_counter->crash_counter;
+    update_status("Starting multiple file fuzzing tests...", stats, current_status);
+
+    init_tar_header_with_content(&header1, stats_counter, content1);
+    init_tar_header_with_content(&header2, stats_counter, content2);
+
+    file_to_archive files[] = {
+        { &header1, content1, (size_t)strlen(content1) },
+        { &header2, content2, (size_t)strlen(content2) }
+    };
+    create_tar_mul_file(files, (size_t) 2, stats_counter);
+    // Should not be FIELD_EOF but dunno what to use there
+    handle_extraction(path_extractor, &stats_counter->crash_multiple_files_counter, stats, CRASH_MISCELLANEOUS,
+                        FIELD_EOF, stats_counter);
+
+    stats_counter->crash_multiple_files_counter += stats_counter->crash_counter - current_crash_counter;
+    update_status("multiple file fuzzing complete...", stats, current_status);
+}
+
 
 int main(const int argc, char* argv[])
 {
@@ -716,6 +741,7 @@ int main(const int argc, char* argv[])
     uname_fuzzing(&stats, path_extractor, &stats_counter, current_status);
     gname_fuzzing(&stats, path_extractor, &stats_counter, current_status);
     end_of_file_fuzzing(&stats, path_extractor, &stats_counter, current_status);
+    multiple_file_fuzzing(&stats, path_extractor, &stats_counter, current_status);
 
     gettimeofday(&timer_end, NULL);
     const double time_used = (double)(timer_end.tv_sec - timer_start.tv_sec) +
@@ -729,32 +755,3 @@ int main(const int argc, char* argv[])
     remove_tar_archives();
     return 0;
 }
-
-/* int main() {
-    // Initialize the stats counter
-    stats_counter_t stats_counter;
-    init_stats_counter(&stats_counter);
-
-    // Create tar headers for the files to be archived
-    tar_t header1, header2;
-    init_tar_header_with_content(&header1, &stats_counter, "uwu");
-    init_tar_header_with_content(&header2, &stats_counter, "owo");
-
-    // Create file_to_archive structures
-    file_to_archive files[] = {
-        { &header1, "uwu", (size_t)strlen("uwu") },
-        { &header2, "owo", (size_t)strlen("owo") }
-    };
-
-    // Create the tar archive
-    const char* tar_filename = "archive.tar";
-    int result = tar_archive_mul_file(tar_filename, files, sizeof(files) / sizeof(files[0]));
-
-    if (result == 0) {
-        printf("Tar archive created successfully: %s\n", tar_filename);
-    } else {
-        printf("Failed to create tar archive: %s\n", tar_filename);
-    }
-
-    return 0;
-} */

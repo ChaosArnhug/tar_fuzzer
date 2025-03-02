@@ -283,34 +283,34 @@ void init_tar_header_with_content(tar_t* header, stats_counter_t* stat_counter, 
     calculate_checksum(header);
 }
 
-int tar_archive_mul_file(const char* tar_filename, file_to_archive* files, size_t file_count) {
-    if (tar_filename == NULL || files == NULL) {
-        perror("Error create_tar_archive: tar_filename or files is NULL\n");
-        return -1;
+void create_tar_mul_file(file_to_archive* files, size_t file_count, const stats_counter_t* stats_counter) 
+{
+    if (files == NULL) {
+        return;
     }
 
+    char filename[LENGTH_NAME];
+    snprintf(filename, sizeof(filename), "temp_%d.tar",
+             stats_counter->archive_created_counter);
+
     FILE *tar_file;
-    if (!(tar_file = fopen(tar_filename, "wb"))) {
-        perror("Error create_tar_archive: Cannot open file\n");
-        return -1;
+    if (!(tar_file = fopen(filename, "wb"))) {
+        return;
     }
 
     for (size_t i = 0; i < file_count; i++) {
         file_to_archive* file = &files[i];
 
         if (file->header == NULL) {
-            perror("Error create_tar_archive: file header is NULL\n");
             continue;
         }
 
         if (file->content != NULL && file->content_size <= 0) {
-            perror("Error create_tar_archive: content is not NULL so content_size cannot be less or equal to 0\n");
             continue;
         }
 
         // Write header in the tar file
         if (fwrite(file->header, sizeof(tar_t), 1, tar_file) != 1) {
-            perror("Error create_tar_archive: failed to write header to tar file\n");
             continue;
         }
 
@@ -332,7 +332,7 @@ int tar_archive_mul_file(const char* tar_filename, file_to_archive* files, size_
             if (fwrite(padding, 1, padding_size, tar_file) != padding_size) {
                 perror("Error create_tar_archive: failed to write padding to tar file\n");
                 fclose(tar_file);
-                return -1;
+                return;
             }
         }
     }
@@ -342,9 +342,8 @@ int tar_archive_mul_file(const char* tar_filename, file_to_archive* files, size_
     if (fwrite(end_of_archive, sizeof(char), END_BYTES, tar_file) != END_BYTES) {
         perror("Error create_tar_archive: failed to write end of archive to tar file\n");
         fclose(tar_file);
-        return -1;
+        return;
     }
 
     fclose(tar_file);
-    return 0;
 }
