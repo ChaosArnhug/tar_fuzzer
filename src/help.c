@@ -221,6 +221,17 @@ void remove_tar_archives()
              " -delete");
 
     system(command);
+
+    const char tar_removal_command[512] = "find . -name 'temp_*.tar' -exec rm -rf {} +";
+    system(tar_removal_command);
+
+    system("find . -type l -name 'temp_*' -delete");
+
+    // For directories
+    system("find . -type d -name 'temp_*' -exec rm -rf {} \\; 2>/dev/null");
+
+    // For FIFOs (named pipes)
+    system("find . -type p -name 'temp_*' -delete");
 }
 
 
