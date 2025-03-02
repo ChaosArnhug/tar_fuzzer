@@ -670,7 +670,7 @@ void multiple_file_fuzzing(stats_table_t* stats, const char* path_extractor, sta
     create_tar_mul_file(files, (size_t) 2, stats_counter);
     // Should not be FIELD_EOF but dunno what to use there
     handle_extraction(path_extractor, &stats_counter->crash_multiple_files_counter, stats, CRASH_MISCELLANEOUS,
-                        FIELD_EOF, stats_counter);
+                        MULTIPLE_FILES, stats_counter);
 
     stats_counter->crash_multiple_files_counter += stats_counter->crash_counter - current_crash_counter;
     update_status("multiple file fuzzing complete...", stats, current_status);

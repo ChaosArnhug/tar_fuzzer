@@ -119,7 +119,7 @@ void print_stats_table(const stats_table_t* stats, char* current_status)
         }
 
         // Right side (Affected Fields)
-        if (i < stats->num_crash_types)
+        if (i < stats->num_field_types)
         {
             printf("| %-14s: %s%-7d%s           |\r\n",
                    stats->field_types[i].name,
@@ -177,7 +177,6 @@ void initialize_fuzzing_types(stats_table_t* stats)
     add_crash_type(stats, "Not integer field", CRASH_NON_NUMERIC);
     add_crash_type(stats, "Too short field", CRASH_TOO_SHORT);
     add_crash_type(stats, "Non octal field", CRASH_NON_OCTAL);
-    add_crash_type(stats, "Field null terminated",CRASH_NULL_TERMINATED);
     add_crash_type(stats, "Field with null byte", CRASH_NULL_BYTE_MIDDLE);
     add_crash_type(stats, "Field with no null bytes", CRASH_NO_NULL_BYTES);
     add_crash_type(stats, "Field with special char", CRASH_SPECIAL_CHAR);
@@ -203,6 +202,7 @@ void initialize_fuzzing_types(stats_table_t* stats)
     add_field_type(stats, "uname field", FIELD_UNAME);
     add_field_type(stats, "gname field", FIELD_GNAME);
     add_field_type(stats, "EOF field", FIELD_EOF);
+    add_field_type(stats, "Multiple Files", MULTIPLE_FILES);
 }
 
 void update_status(const char* status, const stats_table_t* stats, char* current_status)

@@ -51,7 +51,6 @@ static const char TAR_FIELD_DEVMAJOR[] = "devmajor";
 static const char TAR_FIELD_DEVMINOR[] = "devminor";
 static const char TAR_FIELD_PREFIX[] = "prefix";
 
-
 static const char* keep_files[] = {
     ".gitignore",
     "constants.h",
@@ -129,17 +128,16 @@ static enum TarMode tar_modes[] = {
 #define CRASH_TOO_SHORT          3
 #define CRASH_NON_OCTAL          4
 #define CRASH_CUT_MIDDLE         5
-#define CRASH_NULL_TERMINATED    6
-#define CRASH_NULL_BYTE_MIDDLE   7
-#define CRASH_NO_NULL_BYTES      8
-#define CRASH_SPECIAL_CHAR       9
-#define CRASH_NEGATIVE_VALUE     10
-#define CRASH_CHAR_OVERFLOW      11
-#define CRASH_MODE_PERMISSIONS   12
-#define CRASH_OVERFLOW          13
-#define CRASH_OVERFLOW_VALUE 14
-#define CRASH_INJECTION_ATTACK 15
-#define CRASH_MISCELLANEOUS 16
+#define CRASH_NULL_BYTE_MIDDLE   6
+#define CRASH_NO_NULL_BYTES      7
+#define CRASH_SPECIAL_CHAR       8
+#define CRASH_NEGATIVE_VALUE     9
+#define CRASH_CHAR_OVERFLOW      10
+#define CRASH_MODE_PERMISSIONS   11
+#define CRASH_OVERFLOW          12
+#define CRASH_OVERFLOW_VALUE 13
+#define CRASH_INJECTION_ATTACK 14
+#define CRASH_MISCELLANEOUS 15
 
 enum TarHeaderField
 {
@@ -157,6 +155,7 @@ enum TarHeaderField
     FIELD_UNAME = 11,
     FIELD_GNAME = 12,
     FIELD_EOF = 13,
+    MULTIPLE_FILES = 14
 };
 
 #endif
