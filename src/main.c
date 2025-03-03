@@ -11,6 +11,7 @@
 #include "help.h"
 #include "constants.h"
 
+// General fuzzing function. Test all kind of values for a specified field of the tar header and update the results in the stats structure.
 void fuzz_field(tar_t* header, char* field_name, const size_t field_size, const enum TarHeaderField field_type,
                 stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter, char* current_status)
 {
@@ -285,7 +286,6 @@ void name_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counte
     stats_counter->name_field_vulnerabilities_counter += stats_counter->crash_counter - current_crash_counter;
 }
 
-// TODO: currently not finding anything tho
 void mode_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter,
                   char* current_status)
 {
@@ -340,7 +340,6 @@ void gid_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counter
     stats_counter->gid_field_vulnerabilities_counter += stats_counter->crash_counter - current_crash_counter;
 }
 
-// TODO: doesn't work as it should I think
 void size_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counter_t* stats_counter,
                   char* current_status)
 {
@@ -384,6 +383,7 @@ void size_fuzzing(stats_table_t* stats, const char* path_extractor, stats_counte
     update_status("Size field fuzzing complete", stats, current_status);
 }
 
+// Create a header specialised for the mtime fuzzing tests
 void create_header_with_time(const time_t time_value, stats_table_t* stats, const char* path_extractor,
                              stats_counter_t* stats_counter, char* current_status)
 {
