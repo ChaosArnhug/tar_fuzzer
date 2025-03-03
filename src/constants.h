@@ -68,6 +68,7 @@ static const char* keep_files[] = {
     "cmake_install.cmake",
     "CMakeCache.txt",
     "CMakeLists.txt",
+    "live.webp"
 };
 
 static const char* exclude_paths[] = {
